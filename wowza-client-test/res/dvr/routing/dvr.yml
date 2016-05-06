@@ -1,0 +1,17 @@
+mi_wowza_start_dvr:
+    path: /dvr/start/{streamName}
+    schemes: [https]
+    methods: [POST]
+    defaults:
+      _controller: mi.wowza_guzzle_test.dvr.controller.start
+    requirements:
+      streamName: "\w+"
+
+mi_wowza_stop_dvr:
+    path: /dvr/stop/{streamName}
+    schemes: [https]
+    methods: [POST]
+    defaults:
+      _controller: mi.wowza_guzzle_test.dvr.controller.stop
+    requirements:
+      streamName: "\w+"

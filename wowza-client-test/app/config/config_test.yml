@@ -1,0 +1,22 @@
+imports:
+    - { resource: config_dev.yml }
+
+parameters:
+    mi_wowza_guzzle_client:
+        wowza_admin: jan
+        wowza_admin_password: test
+        wowza_app: wowza-app
+        wowza_protocol: http
+        wowza_hostname: localhost
+        wowza_dvr_port: 8086
+
+framework:
+    test: ~
+    session:
+        storage_id: session.storage.mock_file
+    profiler:
+        collect: false
+
+web_profiler:
+    toolbar: false
+    intercept_redirects: false

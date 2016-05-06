@@ -1,0 +1,25 @@
+imports:
+    - { resource: parameters.yml }
+
+parameters:
+    app.root_dir: %kernel.root_dir%/..
+    mi_wowza_guzzle_client:
+        wowza_admin: %wowza_admin%
+        wowza_admin_password: %wowza_admin_password%
+        wowza_protocol: %wowza_protocol%
+        wowza_hostname: %wowza_hostname%
+        wowza_dvr_port: %wowza_dvr_port%
+        wowza_app: %wowza_app%
+
+framework:
+    secret: %secret%
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: ~
+    validation: true
+    templating:
+        engines: ['twig']
+
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"

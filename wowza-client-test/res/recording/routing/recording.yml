@@ -1,0 +1,17 @@
+mi_wowza_start_recording:
+    path: /recording/start/{streamName}
+    schemes: [https]
+    methods: [POST]
+    defaults:
+      _controller: mi.wowza_guzzle_test.recording.controller.start
+    requirements:
+      streamName: "\w+"
+
+mi_wowza_stop_recording:
+    path: /recording/stop/{streamName}
+    schemes: [https]
+    methods: [POST]
+    defaults:
+      _controller: mi.wowza_guzzle_test.recording.controller.stop
+    requirements:
+      streamName: "\w+"

@@ -1,0 +1,6 @@
+docker run -ti \
+           --rm \
+           --volumes-from app-data \
+           --env-file=/home/core/env/symfony \
+           -v $(readlink -f $SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent \
+           php-debug "$@"

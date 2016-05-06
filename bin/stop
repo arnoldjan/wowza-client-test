@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo -e "\e[1;33m =-> SHUTDOWN all container \e[0m"
+
+for name in $(find docker/tmp -maxdepth 1  -type f ! -path docker/tmp -name "*.cid"); do
+    docker stop $(cat $name)
+    docker rm $(cat $name)
+    rm -f $name
+done;
+
+echo -e "\e[1;32m =-> SHUTDOWN DONE \e[0m"

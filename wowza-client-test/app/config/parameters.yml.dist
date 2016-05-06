@@ -1,0 +1,14 @@
+parameters:
+  secret: dummy
+
+  manager_api_host: 'https://wowza-test.mi.dev'
+
+  private_key.pass_phrase: cinderella
+  nginx_host: 'nginx.nginx.dev.rest'
+
+  wowza_admin: admin-user
+  wowza_admin_password: admin-password
+  wowza_app: wowza-app
+  wowza_protocol: http
+  wowza_hostname: localhost
+  wowza_dvr_port: 8086

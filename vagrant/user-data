@@ -1,0 +1,188 @@
+#cloud-config
+
+coreos:
+  etcd:
+    # generate a new token for each unique cluster from https://discovery.etcd.io/new
+    # WARNING: replace each time you 'vagrant destroy'
+    #discovery: https://discovery.etcd.io/<token>
+    addr: $public_ipv4:4001
+    peer-addr: $public_ipv4:7001
+  fleet:
+    public-ip: $public_ipv4
+  units:
+    - name: etcd.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: docker.service
+      drop-ins:
+        - name: 50-skydns.conf
+          content: |
+            [Service]
+            Environment=DOCKER_OPTS='--dns="172.17.42.1"'
+            Environment=DOCKER_OPT_BIP='--bip="172.17.42.1/16"'
+    - name: docker-skydns.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=skydns service
+        After=docker.service
+
+        [Service]
+        User=core
+        ExecStartPre=-/usr/bin/docker kill skydns
+        ExecStartPre=-/usr/bin/docker rm -f skydns
+        ExecStart=/usr/bin/docker run -d -p 172.17.42.1:53:53/udp --name skydns crosbymichael/skydns -nameserver 10.10.10.10:53,10.10.11.11:53,8.8.8.8:53 -domain rest
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: docker-skydock.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=skydock service
+        After=docker-skydns.service
+
+        [Service]
+        User=core
+        ExecStartPre=-/usr/bin/docker kill skydock
+        ExecStartPre=-/usr/bin/docker rm -f skydock
+        ExecStart=/usr/bin/docker run -d -v /var/run/docker.sock:/docker.sock --name skydock crosbymichael/skydock -ttl 30 -environment dev -s /docker.sock -domain rest -name skydns
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: docker-app-data.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description= app data service
+        After=docker-skydock.service
+
+        [Service]
+        User=core
+        ExecStartPre=-/usr/bin/docker kill app-data
+        ExecStartPre=-/usr/bin/docker rm -f app-data
+        ExecStart=/usr/bin/docker run -v /home/core/project:/srv/www/app -v /tmp/vagrant-cache/composer:/root/.composer --name app-data busybox:latest echo "init app data"
+write_files:
+  - path: /home/core/env/symfony
+    permissions: 0644
+    owner: core
+    content: |
+      SYMFONY_DEBUG=1
+      SYMFONY_ENV=dev
+      SYMFONY__PRIVATE_KEY__PASS_PHRASE=cinderella
+
+  - path: /home/core/certs/mi.dev.crt
+    permission: 0644
+    owner: core
+    content: |
+      -----BEGIN CERTIFICATE-----
+      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
+      RLMsR/mpMYfP2bwPlqOrWsE=
+      -----END CERTIFICATE-----
+  - path: /home/core/certs/mi.dev.key
+    permission: 0644
+    owner: core
+    content: |
+      -----BEGIN RSA PRIVATE KEY-----
+      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
+      -----END RSA PRIVATE KEY-----
+  - path: /home/core/certs/dhparam.pem
+    permission: 0644
+    owner: core
+    content: |
+      -----BEGIN DH PARAMETERS-----
+      MIICCAKCAgEAxU6gVwGK2OmtqBukz7rojk7dZ7h6W3rsWG52MdXkJtRPq9xWoapP
+      4btltHgLCd/9yDvPamOhFYTxCAv2kU3Vv1ZNJYx7bVbXxrv71jFVlISXdJCMoskF
+      oOPjgRPzt2Q7ehWMCCcvtvoWqMAxKLMVw22h6qdi5qdQudzKAif9/+4hy+2l5+HX
+      FbzVaiX8o7EnZ9UhCJkTC5lA4XJA7zrO99rKOHRAhbgoi1Ewi5huXo5o6wDzodnA
+      v5PJYMNtMzYRjsBGZUF+/tn7SfUZBJpDPVOoV5/gBOc2h/0TY+YLK9pBg6Hpg5c4
+      Fspoi9r7P84b0JRA0qT7CQAPEMJyujI620BDRxQjEVHaMUe6it5WgxWqxrGEICv4
+      4RF/Kao2nO7q4JFogV8DWijonUAFCAHou2520XDP91u7K/WlZmQ7Nsx+00n06qX7
+      AMwN5YiJIRFEb+9ZdeUhYyG9L50tNnZyCKgMwn1DiQ9XQCS7BIEp2B9ch9d1f/JB
+      juSjiZKBWWM4VkJwim67qHXG+l1mv+5uwAQJgxgAmlueRnfMzp3/cNkvxsW38E1T
+      aH8QNYNH6opEi53SdY1NOtxuu1lAxeMK9ws3f0Pm9IR8ino18gYeL/iy/E8o2Hd9
+      +k1tcKuPY/dtu1iotWCO3Fd1V2NdeEiYsLeDizML48gh3uQyyVx0CqsCAQI=
+      -----END DH PARAMETERS-----

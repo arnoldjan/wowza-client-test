@@ -1,0 +1,8 @@
+_dvr:
+    resource: dvr/routing/dvr.yml
+
+_recording:
+    resource: recording/routing/recording.yml
+
+_cuepoint:
+    resource: cuepoint/routing/cuepoint.yml

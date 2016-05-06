@@ -1,0 +1,4 @@
+/.puli/
+/vendor/*
+/web/bundles/*
+/web/opcache-*

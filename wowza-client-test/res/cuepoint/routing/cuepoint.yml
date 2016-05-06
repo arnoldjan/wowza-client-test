@@ -1,0 +1,8 @@
+mi_wowza_set_cuepoint:
+    path: /stream/{streamName}/cuepoint/set/{text}
+    schemes: [https]
+    methods: [POST]
+    defaults:
+      _controller: mi.wowza_guzzle_test.cuepoint.controller.set
+    requirements:
+      streamName: "\w+"

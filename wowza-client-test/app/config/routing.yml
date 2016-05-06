@@ -1,0 +1,3 @@
+main:
+    resource: "/mi/wowza-guzzle-test/routing.yml"
+    prefix: /api

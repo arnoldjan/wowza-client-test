@@ -1,0 +1,2 @@
+#!/bin/bash
+XDEBUG_CONFIG="idekey=xdebug" PHP_IDE_CONFIG="serverName=project.dev" php -dxdebug.remote_host="10.0.2.2" "$@"

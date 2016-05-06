@@ -1,0 +1,57 @@
+default:
+    formatters:
+        pretty:
+            verbose:  true
+            paths:    false
+            snippets: false
+    suites:
+        dvr:
+            paths:
+                features: %paths.base%/tests/features/dvr
+            contexts:
+                - behatch:rest
+                - behatch:json
+                - Mi\WebcastManager\Bundle\MainBundle\Tests\Behat\WowzaContext
+                - Mi\WebcastManager\Bundle\MainBundle\Tests\Behat\RestContext:
+                    resultPool: @@behatch.http_call.result_pool
+                - Behat\MinkExtension\Context\MinkContext
+            filters:
+                tags: "@dvr"
+        recording:
+            paths:
+                features: %paths.base%/tests/features/recording
+            contexts:
+                - behatch:rest
+                - behatch:json
+                - Mi\WebcastManager\Bundle\MainBundle\Tests\Behat\WowzaContext
+                - Mi\WebcastManager\Bundle\MainBundle\Tests\Behat\RestContext:
+                    resultPool: @@behatch.http_call.result_pool
+                - Behat\MinkExtension\Context\MinkContext
+            filters:
+                tags: "@recording"
+        cuepoint:
+            paths:
+                features: %paths.base%/tests/features/cuepoint
+            contexts:
+                - behatch:rest
+                - behatch:json
+                - Mi\WebcastManager\Bundle\MainBundle\Tests\Behat\WowzaContext
+                - Mi\WebcastManager\Bundle\MainBundle\Tests\Behat\RestContext:
+                    resultPool: @@behatch.http_call.result_pool
+                - Behat\MinkExtension\Context\MinkContext
+            filters:
+                tags: "@cuepoint"
+    extensions:
+        Sanpi\Behatch\Extension: ~
+        Behat\MinkExtension:
+            sessions:
+                default:
+                    symfony2: ~
+            base_url: "https://wowza-test.mi.dev/"
+            show_auto:    false
+            files_path: '%paths.base%/tests/fixtures'
+        Behat\Symfony2Extension:
+            kernel:
+                class: Mi\WebcastManager\Application\AppKernel
+                debug: false
+                bootstrap: %paths.base%/var/bootstrap.php.cache
